@@ -1,18 +1,33 @@
-pipeline {
-    agent any
-    stages {
-        stage('CheckOut') {
-            steps {
-                git url: 'https://github.com/foo/bar.git'
-            }
-        }
-        stage('build && SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('My SonarQube Server') {
-                    // Optionally use a Maven environment you've configured already
-                    withMaven(maven:'Maven 3.5') {
-                        sh 'mvn clean package sonar:sonar'
-                    }
-                }
-            }
-        }
+   
+pipeline{
+
+agent any
+
+tools
+{
+  maven 'maven3.8.2'
+
+}
+
+stages{
+   
+   stage('CheckoutCode')
+   {
+     steps{
+	 git branch: 'development', credentialsId: '8e348aa2-9531-4dbe-863d-1adb64897470', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
+	 }
+   }
+   
+   stage('Build')
+   {
+    steps{
+	   "mvn clean package"
+	 }
+   }
+   
+    stage('ExecuteSonarQubeReport')
+   {
+     steps{
+	  "mvn sonar:sonar"
+	 }
+   }
